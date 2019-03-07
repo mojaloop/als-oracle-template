@@ -24,6 +24,45 @@
 
 'use strict'
 
-const Setup = require('./setup')
+const Test = require('tapes')(require('tape'))
+const Sinon = require('sinon')
+const Logger = require('@mojaloop/central-services-shared').Logger
+const Proxyquire = require('proxyquire')
 
-module.exports = Setup.initialize()
+Test('Server', (serverTest) => {
+  let sandbox
+
+  serverTest.beforeEach(test => {
+    try {
+      sandbox = Sinon.createSandbox()
+    } catch (err) {
+      Logger.error(`serverTest failed with error - ${err}`)
+      console.error(err.message)
+    }
+    test.end()
+  })
+
+  serverTest.afterEach(test => {
+    sandbox.restore()
+    test.end()
+  })
+
+  serverTest.test('should import setup and initialize', test => {
+    try {
+      let initStub = sandbox.stub()
+      Proxyquire('../../src/server', {
+        './setup': {
+          initialize: initStub
+        }
+      })
+      test.ok(initStub.withArgs().calledOnce)
+      test.end()
+    } catch (err) {
+      Logger.error(`serverTest failed with error - ${err}`)
+      test.fail()
+      test.end()
+    }
+  })
+
+  serverTest.end()
+})

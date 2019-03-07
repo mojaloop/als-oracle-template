@@ -1,16 +1,35 @@
 'use strict'
 
-const Test = require('tape')
-const Hapi = require('hapi')
-const HapiOpenAPI = require('hapi-openapi')
-const Path = require('path')
-const Mockgen = require('../src/models/mockgen.js')
+const Test = require('tapes')(require('tape'))
+// const Hapi = require('hapi')
+// const HapiOpenAPI = require('hapi-openapi')
+// const Path = require('path')
+const InitServer = require('./../../../src/setup').initialize
+const Mockgen = require('../../../src/models/mockgen.js')
 const responseCodes = [201, 400, 401, 403, 404, 405, 406, 501, 503]
 
 /**
  * Test for /participants 
  */
-Test('/participants', function (t) {
+Test('/participants', async function (participantTests) {
+  let server
+  participantTests.beforeEach(async t => {
+    try {
+      server = await InitServer()
+      t.end()
+    } catch (e) {
+      console.error(e)
+    }
+  })
+
+  participantTests.afterEach(async t => {
+    try {
+      await server.stop()
+      t.end()
+    } catch (e) {
+      console.error(e)
+    }
+  })
 
   /**
    * summary: Batch create participant information
@@ -19,19 +38,8 @@ Test('/participants', function (t) {
    * produces: application/json
    * responses: 201, 400, 401, 403, 404, 405, 406, 501, 503
    */
-  t.test('test ParticipantsPost post operation', async function (t) {
+  await participantTests.test('test ParticipantsPost post operation', async function (t) {
     try {
-      const server = new Hapi.Server()
-
-      await server.register({
-        plugin: HapiOpenAPI,
-        options: {
-          api: Path.resolve(__dirname, '../src/interface/swagger.json'),
-          handlers: Path.join(__dirname, '../src/handlers'),
-          outputvalidation: true
-        }
-      })
-
       const requests = new Promise((resolve, reject) => {
         Mockgen().requests({
           path: '/participants',
@@ -64,43 +72,22 @@ Test('/participants', function (t) {
         // Set the Content-Type as application/x-www-form-urlencoded
         options.headers = options.headers || {}
         options.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-
-        // options.headers['Accept: application/json' \
-        // options.headers['Cache-Control: no-cache' \
-        // options.headers['Content-Type: application/json' \
-        // options.headers['Postman-Token: fa454a97-3f68-4310-9961-4f66f6ac4809' \
-        // options.headers['accept: {{accept}}' \
-        // options.headers['content-type: {{content-type}}' \
-        // options.headers['date: {{date}}' \
-        // options.headers['fspiop-destination']
-        // options.headers['fspiop-encryption']
-        // options.headers['fspiop-http-method']
-        // options.headers['fspiop-signature']
         options.headers['fspiop-source'] = 'source'
-        // options.headers['fspiop-uri']
-        // options.headers['x-forwarded-for']
       }
       // If headers are present, set the headers.
       if (mock.request.headers) {
         options.headers = mock.request.headers
       }
-
-      // const response = await server.inject(options)
-
-      // t.equal(response.statusCode, 201, 'Ok response status')
-      // t.end()
-
       for (let responseCode of responseCodes) {
-        // options.responseCode = responseCode
         server.app.responseCode = responseCode
         const response = await server.inject(options)
-        console.log(options)
         t.equal(response.statusCode, responseCode, 'Ok response status')
       }
       t.end()
     } catch (e) {
       console.log(e)
-      t.end()
+      t.fail()
     }
   })
+  await participantTests.end()
 })
