@@ -33,7 +33,7 @@
         "tapes": "4.1.0"
     },
     "scripts": {
-        "test": "tape 'tests/**/*.js'",
+        "test": "tape 'test/**/*.js'",
         "test:unit": "tape 'test/unit/**/*.js'",
         "test:xunit": "tape 'test/unit/**/*.js' | tap-xunit",
         "cover": "istanbul cover tape -- 'test/unit/**/*.js'",
