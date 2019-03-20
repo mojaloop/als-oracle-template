@@ -33,6 +33,7 @@
         "tapes": "4.1.0"
     },
     "scripts": {
+        "start": "node ./src/server",
         "test": "tape 'test/**/*.js'",
         "test:unit": "tape 'test/unit/**/*.js'",
         "test:xunit": "tape 'test/unit/**/*.js' | tap-xunit",
@@ -44,6 +45,5 @@
     },
     "generator-swaggerize": {
         "version": "4.1.0"
-    },
-    "main": "./server"
+    }
 }
