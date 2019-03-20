@@ -9,7 +9,13 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/tests/unit/handlers/participants/{Type}/{ID}.test.js"
+      "program": "${workspaceFolder}/src/server"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Test",
+      "program": "${workspaceFolder}/test/unit/handlers/participants.test.js"
     }
   ]
 }
