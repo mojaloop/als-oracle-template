@@ -13,11 +13,14 @@
         "registry": "https://registry.npmjs.org"
     },
     "dependencies": {
-        "hapi": "^17.0.0",
-        "boom": "^7.1.1",
-        "hapi-openapi": "^1.0.0",
+        "@mojaloop/central-services-database": "^5.2.1",
         "@mojaloop/central-services-shared": "4.1.0-snapshot",
-        "@mojaloop/forensic-logging-client": "0.5.1"
+        "@mojaloop/forensic-logging-client": "0.5.1",
+        "boom": "^7.1.1",
+        "dotenv": "^7.0.0",
+        "hapi": "^17.0.0",
+        "hapi-openapi": "^1.2.1",
+        "joi": "^14.3.1"
     },
     "devDependencies": {
         "eslint": "5.6.1",

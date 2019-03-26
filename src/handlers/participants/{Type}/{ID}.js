@@ -1,7 +1,8 @@
 'use strict'
 
 const Boom = require('boom')
-const dataAccess = require('../../../models/participants/{Type}/{ID}')
+
+const participants = require('../../../domain/participants/index')
 
 /**
  * Operations on /participants/{Type}/{ID}
@@ -15,39 +16,51 @@ module.exports = {
    * responses: 200, 400, 401, 403, 404, 405, 406, 501, 503
    */
   get: async function ParticipantsByTypeAndIDGet (request, h) {
-    const getData = new Promise((resolve, reject) => {
-      switch (request.server.app.responseCode) {
-        case 200:
-        case 400:
-        case 401:
-        case 404:
-        case 403:
-        case 405:
-        case 406:
-        case 501:
-        case 503:
-          dataAccess.get[`${request.server.app.responseCode}`](request, h, (error, mock) => {
-            if (error) reject(error)
-            else if (!mock.responses) resolve()
-            else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
-            else resolve(mock.responses)
-          })
-          break
-        default:
-          dataAccess.get[`default`](request, h, (error, mock) => {
-            if (error) reject(error)
-            else if (!mock.responses) resolve()
-            else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
-            else resolve(mock.responses)
-          })
-      }
-    })
+    const type = request.params.Type;
+    const identifier = request.params.ID;
     try {
-      const response = await getData
-      return h.response(response).code(request.server.app.responseCode)
+      const participant = await participants.getParticipantsByTypeAndID(type, identifier)
+      return h.response(participant)
     } catch (e) {
       console.log(e)
+      throw e
+      //return Boom.notFound(e.message)
     }
+
+   // return h.response('response').code(200)
+    // const getData = new Promise((resolve, reject) => {
+    //   switch (request.server.app.responseCode) {
+    //     case 200:
+    //     case 400:
+    //     case 401:
+    //     case 404:
+    //     case 403:
+    //     case 405:
+    //     case 406:
+    //     case 501:
+    //     case 503:
+    //       dataAccess.get[`${request.server.app.responseCode}`](request, h, (error, mock) => {
+    //         if (error) reject(error)
+    //         else if (!mock.responses) resolve()
+    //         else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
+    //         else resolve(mock.responses)
+    //       })
+    //       break
+    //     default:
+    //       dataAccess.get[`default`](request, h, (error, mock) => {
+    //         if (error) reject(error)
+    //         else if (!mock.responses) resolve()
+    //         else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
+    //         else resolve(mock.responses)
+    //       })
+    //   }
+    // })
+    // try {
+    //   const response = await getData
+    //   return h.response(response).code(request.server.app.responseCode)
+    // } catch (e) {
+    //   console.log(e)
+    // }
   },
   /**
    * summary: Return participant information
@@ -57,40 +70,59 @@ module.exports = {
    * responses: 200, 400, 401, 403, 404, 405, 406, 501, 503
    */
   put: async function ParticipantsByTypeAndIDPut (request, h) {
-    const getData = new Promise((resolve, reject) => {
-      switch (request.server.app.responseCode) {
-        case 200:
-        case 400:
-        case 401:
-        case 404:
-        case 403:
-        case 405:
-        case 406:
-        case 501:
-        case 503:
-          dataAccess.put[`${request.server.app.responseCode}`](request, h, (error, mock) => {
-            if (error) reject(error)
-            else if (!mock.responses) resolve()
-            else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
-            else resolve(mock.responses)
-          })
-          break
-        default:
-          dataAccess.put[`default`](request, h, (error, mock) => {
-            if (error) reject(error)
-            else if (!mock.responses) resolve()
-            else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
-            else resolve(mock.responses)
-          })
-      }
-    })
+
+
+    let fspId = request.payload.fspId;
+    let currency = request.payload.currency; 
+
+
     try {
-      const response = await getData
-      return h.response(response).code(request.server.app.responseCode)
+      const participant = await participants.updateParticipant(fspId,currency)
+
+
+      if(typeof participant.errorInformation !== 'undefined' && participant.errorInformation !== null) return h.response(participant).code(participant.errorInformation.errorCode)
+      return h.response(participant).code(200)
+
     } catch (e) {
       console.log(e)
+      throw e
+     // return new Boom.notFound(e.message)
     }
-  },
+
+  //   const getData = new Promise((resolve, reject) => {
+  //     switch (request.server.app.responseCode) {
+  //       case 200:
+  //       case 400:
+  //       case 401:
+  //       case 404:
+  //       case 403:
+  //       case 405:
+  //       case 406:
+  //       case 501:
+  //       case 503:
+  //         dataAccess.put[`${request.server.app.responseCode}`](request, h, (error, mock) => {
+  //           if (error) reject(error)
+  //           else if (!mock.responses) resolve()
+  //           else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
+  //           else resolve(mock.responses)
+  //         })
+  //         break
+  //       default:
+  //         dataAccess.put[`default`](request, h, (error, mock) => {
+  //           if (error) reject(error)
+  //           else if (!mock.responses) resolve()
+  //           else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
+  //           else resolve(mock.responses)
+  //         })
+  //     }
+  //   })
+  //   try {
+  //     const response = await getData
+  //     return h.response(response).code(request.server.app.responseCode)
+  //   } catch (e) {
+  //     console.log(e)
+  //   }
+   },
   /**
    * summary: Create participant information
    * description: The HTTP request POST /participants/{Type}/{ID} is used to create information in the server regarding the provided identity, defined by {Type} and {ID} (for example, POST /participants/MSISDN/123456789).
@@ -99,39 +131,68 @@ module.exports = {
    * responses: 201, 400, 401, 403, 404, 405, 406, 501, 503
    */
   post: async function ParticipantsByTypeAndIDPost (request, h) {
-    const getData = new Promise((resolve, reject) => {
-      switch (request.server.app.responseCode) {
-        case 201:
-        case 400:
-        case 401:
-        case 404:
-        case 403:
-        case 405:
-        case 406:
-        case 501:
-        case 503:
-          dataAccess.post[`${request.server.app.responseCode}`](request, h, (error, mock) => {
-            if (error) reject(error)
-            else if (!mock.responses) resolve()
-            else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
-            else resolve(mock.responses)
-          })
-          break
-        default:
-          dataAccess.post[`default`](request, h, (error, mock) => {
-            if (error) reject(error)
-            else if (!mock.responses) resolve()
-            else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
-            else resolve(mock.responses)
-          })
-      }
-    })
+
+    let fspId = request.payload.fspId;
+    let currency = request.payload.currency; 
+
+
     try {
-      const response = await getData
-      return h.response(response).code(request.server.app.responseCode)
+      const participant = await participants.createParticipant(fspId,currency)
+
+
+      if(typeof participant.errorInformation !== 'undefined' && participant.errorInformation !== null) return h.response(participant).code(participant.errorInformation.errorCode)
+      return h.response(participant).code(201)
+
     } catch (e) {
       console.log(e)
+      throw e
+     // return new Boom.notFound(e.message)
     }
+
+
+
+    // try {
+    //   const participant = await participants.getParticipantsByTypeAndID(type, identifier)
+    //   return h.response(participant)
+    // } catch (e) {
+    //   console.log(e)
+    //   throw e
+    //   //return Boom.notFound(e.message)
+    // }
+
+    // const getData = new Promise((resolve, reject) => {
+    //   switch (request.server.app.responseCode) {
+    //     case 201:
+    //     case 400:
+    //     case 401:
+    //     case 404:
+    //     case 403:
+    //     case 405:
+    //     case 406:
+    //     case 501:
+    //     case 503:
+    //       dataAccess.post[`${request.server.app.responseCode}`](request, h, (error, mock) => {
+    //         if (error) reject(error)
+    //         else if (!mock.responses) resolve()
+    //         else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
+    //         else resolve(mock.responses)
+    //       })
+    //       break
+    //     default:
+    //       dataAccess.post[`default`](request, h, (error, mock) => {
+    //         if (error) reject(error)
+    //         else if (!mock.responses) resolve()
+    //         else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
+    //         else resolve(mock.responses)
+    //       })
+    //   }
+    // })
+    // try {
+    //   const response = await getData
+    //   return h.response(response).code(request.server.app.responseCode)
+    // } catch (e) {
+    //   console.log(e)
+    // }
   },
   /**
    * summary: Delete participant information
@@ -141,38 +202,50 @@ module.exports = {
    * responses: 204, 400, 401, 403, 404, 405, 406, 501, 503
    */
   delete: async function ParticipantsByTypeAndIDDelete (request, h) {
-    const getData = new Promise((resolve, reject) => {
-      switch (request.server.app.responseCode) {
-        case 204:
-        case 400:
-        case 401:
-        case 404:
-        case 403:
-        case 405:
-        case 406:
-        case 501:
-        case 503:
-          dataAccess.delete[`${request.server.app.responseCode}`](request, h, (error, mock) => {
-            if (error) reject(error)
-            else if (!mock.responses) resolve()
-            else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
-            else resolve(mock.responses)
-          })
-          break
-        default:
-          dataAccess.delete[`default`](request, h, (error, mock) => {
-            if (error) reject(error)
-            else if (!mock.responses) resolve()
-            else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
-            else resolve(mock.responses)
-          })
-      }
-    })
+
+    const type = request.params.Type;
+    const identifier = request.params.ID;
     try {
-      const response = await getData
-      return h.response(response).code(request.server.app.responseCode)
+      const participant = await participants.deleteParticipant(type, identifier)
+      return h.response(participant)
     } catch (e) {
       console.log(e)
+      throw e
+      //return Boom.notFound(e.message)
     }
+
+    // const getData = new Promise((resolve, reject) => {
+    //   switch (request.server.app.responseCode) {
+    //     case 204:
+    //     case 400:
+    //     case 401:
+    //     case 404:
+    //     case 403:
+    //     case 405:
+    //     case 406:
+    //     case 501:
+    //     case 503:
+    //       dataAccess.delete[`${request.server.app.responseCode}`](request, h, (error, mock) => {
+    //         if (error) reject(error)
+    //         else if (!mock.responses) resolve()
+    //         else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
+    //         else resolve(mock.responses)
+    //       })
+    //       break
+    //     default:
+    //       dataAccess.delete[`default`](request, h, (error, mock) => {
+    //         if (error) reject(error)
+    //         else if (!mock.responses) resolve()
+    //         else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
+    //         else resolve(mock.responses)
+    //       })
+    //   }
+    // })
+    // try {
+    //   const response = await getData
+    //   return h.response(response).code(request.server.app.responseCode)
+    // } catch (e) {
+    //   console.log(e)
+    // }
   }
 }

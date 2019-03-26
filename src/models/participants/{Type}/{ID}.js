@@ -1,5 +1,9 @@
 'use strict'
 var Mockgen = require('../../mockgen.js')
+//const Db = require('../../index')
+const Boom = require('boom')
+const Db = require('@mojaloop/central-services-database').Db
+
 /**
  * Operations on /participants/{Type}/{ID}
  */
@@ -111,7 +115,27 @@ module.exports = {
         operation: 'get',
         response: '503'
       }, callback)
+    }, 
+    default: async function (participantId) {
+
+      try {
+        let partyList = await Db.participant.query(builder => {
+            return builder
+            .join('currencyParticipant','participant.participantName','currencyParticipant.participantId')
+            .select('participant.participantName AS fspId','currencyParticipant.currencyId AS currency')
+            .where('participant.participantName',participantId)
+            .catch((err) => {
+              console.log(err);
+              throw err
+          })})
+          return {partyList};
+    } catch (err) {
+        console.log(err)
+       throw new Error(err.message)
     }
+  }
+    
+     
   },
   /**
    * summary: Return participant information
@@ -220,6 +244,34 @@ module.exports = {
         operation: 'put',
         response: '503'
       }, callback)
+    },
+    default: async function (fspId, currency){
+      const knex = await Db.getKnex()
+
+      return await knex.transaction(async (trx) => {
+        try {
+         
+          await knex('participant').transacting(trx)
+            .where({ participantName : fspId })
+            .update({ participantName: fspId})
+
+            await knex('currencyParticipant').transacting(trx)
+            .where({ participantId : fspId })
+            .update({
+              currencyId: currency,
+              participantId: fspId
+            })
+
+          await trx.commit
+          return 'Ok'
+        } catch (err) {
+          await trx.rollback
+          throw err
+        }
+      })
+        .catch((err) => {
+          throw err
+        })
     }
   },
   /**
@@ -330,17 +382,65 @@ module.exports = {
         response: '503'
       }, callback)
     },
-    default: function (req, res, callback) {
-      /**
-       * Using mock data generator module.
-       * Replace this by actual data for the api.
-       */
-      Mockgen().responses({
-        path: '/participants',
-        operation: 'post',
-        response: 'default'
-      }, callback)
+    default: async function (fspId, currency) {
+
+      const getParticipant = (fspId) => {
+        try {
+          return Db.participant.findOne({ participantName: fspId })
+        } catch (err) {
+          throw err
+        }
+      }
+
+      let _Participant = await getParticipant(fspId)
+      let err = 
+      {
+        "errorInformation": {
+          "errorCode": 400,
+          "errorDescription": "Duplicate fspId not allowed",
+          "extensionList": {
+            "extension": [
+              {
+                "key": "error",
+                "value": "Duplicate"
+              }
+            ]
+          }
+        }
+      }
+       
+      if (_Participant)  return err
+
+      let createParticipant = (fspId) => {
+        try {
+         
+          return Db.participant.insert({
+            participantName: fspId,
+            isActive: 1
+          })
+        } catch (err) {
+          throw err
+        }
     }
+
+    let linkcurrencyParticipant = (fspId,currency) => {
+      try {
+       
+        return Db.currencyParticipant.insert({
+          currencyId: currency,
+          participantId: fspId
+        })
+      } catch (err) {
+        throw err
+      }
+  }
+
+  await createParticipant(fspId)
+  await linkcurrencyParticipant(fspId, currency)
+  return 'created'
+
+      }
+        
   },
   /**
    * summary: Delete participant information
@@ -450,16 +550,21 @@ module.exports = {
         response: '503'
       }, callback)
     },
-    default: function (req, res, callback) {
-      /**
-       * Using mock data generator module.
-       * Replace this by actual data for the api.
-       */
-      Mockgen().responses({
-        path: '/participants/{Type}/{ID}',
-        operation: 'delete',
-        response: 'default'
-      }, callback)
+    default: async function (fspId){
+      
+        const knex = await Db.getKnex()
+          try {
+           
+            await knex('participant').transacting(trx)
+              .where({ participantName : fspId })
+              .update({ isActive : 0 })
+  
+            await trx.commit
+            return 'Ok'
+          } catch (err) {
+            await trx.rollback
+            throw err
+          }
     }
 
   }
