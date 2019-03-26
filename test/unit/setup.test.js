@@ -139,11 +139,13 @@ Test('Server Setup', async setupTest => {
           const e = new Error('setHost error')
           serverStub.plugins.openapi.setHost = sandbox.stub().throws(e)
           await SetupProxy.initialize()
-          test.ok(serverStub.log.withArgs('error', e.message).calledOnce)
+     
+          test.fail('Didnt throw')
+          //test.ok(serverStub.log.withArgs('error', e.message).calledOnce)
           test.end()
         } catch (err) {
           Logger.error(`init failed with error - ${err}`)
-          test.fail()
+          test.ok('error thrown')
           test.end()
         }
       })
@@ -160,7 +162,7 @@ Test('Server Setup', async setupTest => {
       //   }
       // })
 
-      await initTest.end()
+       initTest.end()
     } catch (err) {
       Logger.error(`setupTest failed with error - ${err}`)
       initTest.fail()

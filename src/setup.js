@@ -100,6 +100,7 @@ const initialize = async (config = defaultConfig, openAPIPluginOptions = openAPI
       return server
     } catch (e) {
       server.log('error', e.message)
+      throw e
     }
   }
 }

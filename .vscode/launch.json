@@ -15,7 +15,7 @@
       "type": "node",
       "request": "launch",
       "name": "Test",
-      "program": "${workspaceFolder}/test/unit/handlers/participants.test.js"
+      "program": "${workspaceFolder}/test/unit/setup.test.js"
     }
   ]
 }
