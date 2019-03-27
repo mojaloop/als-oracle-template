@@ -124,6 +124,7 @@ module.exports = {
             .join('currencyParticipant','participant.participantName','currencyParticipant.participantId')
             .select('participant.participantName AS fspId','currencyParticipant.currencyId AS currency')
             .where('participant.participantName',participantId)
+            .andWhere('isActive',1)
             .catch((err) => {
               console.log(err);
               throw err
@@ -552,20 +553,18 @@ module.exports = {
     },
     default: async function (fspId){
       
+
+        try {
         const knex = await Db.getKnex()
-          try {
-           
-            await knex('participant').transacting(trx)
+            await knex('participant')
               .where({ participantName : fspId })
               .update({ isActive : 0 })
-  
-            await trx.commit
             return 'Ok'
-          } catch (err) {
-            await trx.rollback
-            throw err
-          }
-    }
+        } catch (err) {
+          throw err
+        }
+     
+    }   
 
   }
 }

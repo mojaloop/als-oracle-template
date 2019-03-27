@@ -203,10 +203,10 @@ module.exports = {
    */
   delete: async function ParticipantsByTypeAndIDDelete (request, h) {
 
-    const type = request.params.Type;
+  
     const identifier = request.params.ID;
     try {
-      const participant = await participants.deleteParticipant(type, identifier)
+      const participant = await participants.deleteParticipant(identifier)
       return h.response(participant)
     } catch (e) {
       console.log(e)
