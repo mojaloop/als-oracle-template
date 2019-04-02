@@ -38,7 +38,7 @@ Test('Server Setup', async setupTest => {
   let HapiStub
   let HapiOpenAPIStub
   let PathStub
-  // let DbStub
+  let DbStub
   // let EnumsStub
   let ConfigStub
   let EngineStub
@@ -118,34 +118,33 @@ Test('Server Setup', async setupTest => {
         }
       })
 
-      await initTest.test('should catch errors and console.error output', async test => {
-        try {
-          // const e = new Error('Database unavailable')
-          // DbStub.connect = sandbox.stub().throws(e)
-          let consoleErrorStub = sandbox.stub(console, 'error')
-          await SetupProxy.initialize()
-          // test.ok(consoleErrorStub.withArgs(e).calledOnce)
-          consoleErrorStub.restore()
-          test.end()
-        } catch (err) {
-          Logger.error(`init failed with error - ${err}`)
-          test.fail()
-          test.end()
-        }
-      })
+      // await initTest.test('0', async test => {
+      //   try {
+      //     const e = new Error('Database unavailable')
+      //     DbStub.connect = sandbox.stub().throws(e)
+      //     let consoleErrorStub = sandbox.stub(console, 'error')
+      //     await SetupProxy.initialize()
+      //     test.ok(consoleErrorStub.withArgs(e).calledOnce)
+      //     consoleErrorStub.restore()
+      //     test.fail()
+      //     test.end()
+      //   } catch (err) {
+      //     Logger.error(`test is throwing - ${err}`)
+      //     test.ok()
+      //     test.end()
+      //   }
+      // })
 
       await initTest.test('should catch errors after createServer and use server.log', async test => {
         try {
           const e = new Error('setHost error')
           serverStub.plugins.openapi.setHost = sandbox.stub().throws(e)
           await SetupProxy.initialize()
-     
-          test.fail('Didnt throw')
-          //test.ok(serverStub.log.withArgs('error', e.message).calledOnce)
+          test.ok(serverStub.log.withArgs('error', e.message).calledOnce)
           test.end()
         } catch (err) {
           Logger.error(`init failed with error - ${err}`)
-          test.ok('error thrown')
+          test.fail()
           test.end()
         }
       })
@@ -162,7 +161,7 @@ Test('Server Setup', async setupTest => {
       //   }
       // })
 
-       initTest.end()
+      await initTest.end()
     } catch (err) {
       Logger.error(`setupTest failed with error - ${err}`)
       initTest.fail()
