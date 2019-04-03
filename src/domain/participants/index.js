@@ -23,7 +23,7 @@ module.exports = {
         Joi.validate(
             {
                 Type:type,ID:identifier
-            },identifierSchema, (err,value)=>{
+            },identifierSchema, async (err,value)=>{
                 if(err){
                     //console.log(err);
                     response= err.message;
@@ -31,7 +31,7 @@ module.exports = {
                     var accountNumber=value.ID;
                     var bankCode=accountNumber.substring(0,3);
                      
-                    response = ParticipantsModel.get.default(bankCode)       
+                    response = await ParticipantsModel.get.default(bankCode)       
                 }
             }
         )
