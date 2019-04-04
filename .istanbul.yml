@@ -3,12 +3,12 @@ instrumentation:
   excludes: ['**/test/**']
 check:
   global:
-    statements: 70
+    statements: 90
     lines: 90
-    branches: 60
+    branches: 90
     functions: 90
   each:
-    statements: 70
+    statements: 90
     lines: 90
-    branches: 60
+    branches: 90
     functions: 90

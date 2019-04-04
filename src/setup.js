@@ -6,7 +6,7 @@ const Path = require('path')
 // const Db = require('./models')
 // const Enums = require('./models/lib/enums')
 const Config = require('../config/default.json')
-const Db = require('./models/index.js')
+const Db = require('@mojaloop/central-services-database').Db
 
 async function connectDatabase () {
   return await Db.connect(Config.DATABASE_URI)
