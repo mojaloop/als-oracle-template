@@ -18,12 +18,16 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
 
- * Georgi Georgiev <georgi.georgiev@modusbox.com>
+ * Valentin Genev <valentin.genev@modusbox.com>
  --------------
  ******/
 
-'use strict'
-
-const Setup = require('./setup')
-
-module.exports = Setup.initialize()
+module.exports = (obj) => {
+  if (obj && typeof obj !== 'object') return true
+  if (obj && Object.keys(obj).length) {
+    for (let key of Object.keys(obj)) {
+      if (key && obj[key]) return true
+    }
+  }
+  return false
+}
