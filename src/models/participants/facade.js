@@ -11,11 +11,7 @@ const Facade = {
             .join('currencyParticipant','participant.name','currencyParticipant.participantId')
             .select('participant.name AS fspId','currencyParticipant.currencyId AS currency')
             .where('participant.name',participantId)
-            .andWhere('isActive',1)
-            .catch((err) => {
-              console.log(err);
-              throw err
-          })})
+            .andWhere('participant.isActive',1)})
 
           return {partyList};
     } catch (err) {
@@ -25,64 +21,39 @@ const Facade = {
    
   },
 
-  createParticipant: async function (fspId, currency) {
-    const getParticipant = (fspId) => {
-      try {
-        return Db.participant.findOne({ name: fspId })
-      } catch (err) {
-        throw err
-      }
-    }
+//   createParticipant: async function (fspId, currency) {
+    
 
-    let _Participant = await getParticipant(fspId)
-    let err = 
-    {
-      "errorInformation": {
-        "errorCode": 400,
-        "errorDescription": "Duplicate fspId not allowed",
-        "extensionList": {
-          "extension": [
-            {
-              "key": "error",
-              "value": "Duplicate"
-            }
-          ]
-        }
-      }
-    }
-     
-    if (_Participant)  return err
-
-    let createParticipant = (fspId) => {
-      try {
+//     let createParticipant = (fspId) => {
+//       try {
        
-        return Db.participant.insert({
-          name: fspId,
-          isActive: 1
-        })
-      } catch (err) {
-        throw err
-      }
-  }
+//         return Db.participant.insert({
+//           name: fspId,
+//           isActive: 1
+//         })
+//       } catch (err) {
+//         throw err
+//       }
+//   }
 
-  let linkcurrencyParticipant = (fspId,currency) => {
-    try {
+//   let linkcurrencyParticipant = (fspId,currency) => {
+//     try {
      
-      return Db.currencyParticipant.insert({
-        currencyId: currency,
-        participantId: fspId
-      })
-    } catch (err) {
-      throw err
-    }
-}
+//       return Db.currencyParticipant.insert({
+//         currencyId: currency,
+//         participantId: fspId
+//       })
+//     } catch (err) {
+//       throw err
+//     }
+// }
 
-await createParticipant(fspId)
-await linkcurrencyParticipant(fspId, currency)
-return 'created'
+// await createParticipant(fspId)
+// await linkcurrencyParticipant(fspId, currency)
+// return 'created'
 
     
-  },
+//   },
 
   updateByParticipantId: async function (fspId, currency) {
     const knex = await Db.getKnex()
@@ -125,8 +96,7 @@ return 'created'
 
           if( await participant() === 1) return 'Ok'
           if( await participant() != 1) return 'Error'
-          console.log('kinachorudi', _Participant)
-        
+                  
       } catch (err) {
         throw err
       }

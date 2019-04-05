@@ -12,6 +12,26 @@ module.exports = {
        
     },
     createParticipant: async function (fspId, currency) {
+
+        let _Participant = await ParticipantsModel.getParticipant(fspId)
+        let err = 
+        {
+          "errorInformation": {
+            "errorCode": 400,
+            "errorDescription": "Duplicate fspId not allowed",
+            "extensionList": {
+              "extension": [
+                {
+                  "key": "error",
+                  "value": "Duplicate"
+                }
+              ]
+            }
+          }
+        }
+         
+        if (_Participant)  return err
+    
         return await ParticipantsModel.createParticipant(fspId, currency)
         
       //  return await  ParticipantsModel.post.default(fspId, currency)
@@ -22,7 +42,7 @@ module.exports = {
  
 
     }, deleteByParticipantId: async function (fspId) {
-        return await ParticipantsModel.deleteByParticipantId(fspId)
+        return await ParticipantsModel.deleteParticipant(fspId)
     }, getConfiguration: async function(){
         return await ConfigurationModel.getConfiguration()
     }
