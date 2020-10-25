@@ -6,6 +6,11 @@ const Path = require('path')
 // const Db = require('./models')
 // const Enums = require('./models/lib/enums')
 const Config = require('../config/default.json')
+const Db = require('@mojaloop/central-services-database').Db
+
+async function connectDatabase () {
+  return await Db.connect(Config.DATABASE_URI)
+}
 
 const openAPIOptions = {
   api: Path.resolve(__dirname, './interface/swagger.json'),
@@ -89,11 +94,13 @@ const initialize = async (config = defaultConfig, openAPIPluginOptions = openAPI
   const server = await createServer(config, openAPIPluginOptions)
   if (server) {
     try {
+      await connectDatabase()
       server.plugins.openapi.setHost(server.info.host + ':' + server.info.port)
       server.log('info', `Server running on ${server.info.host}:${server.info.port}`)
       return server
     } catch (e) {
       server.log('error', e.message)
+      throw e
     }
   }
 }

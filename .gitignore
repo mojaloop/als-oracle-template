@@ -45,6 +45,11 @@ jspm_packages
 
 # VSCode directory
 .vscode
+# ——————— #
+# IntelliJ #
+# ——————— #
+.idea/
+**/*.iml
 
 .npmrc
 
@@ -56,4 +61,6 @@ jspm_packages
 
 #package-lock.json
 .history
+
+
 

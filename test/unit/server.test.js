@@ -29,7 +29,7 @@ const Sinon = require('sinon')
 const Logger = require('@mojaloop/central-services-shared').Logger
 const Proxyquire = require('proxyquire')
 
-Test('Server', (serverTest) => {
+Test('Server', async (serverTest) => {
   let sandbox
 
   serverTest.beforeEach(test => {
@@ -47,7 +47,7 @@ Test('Server', (serverTest) => {
     test.end()
   })
 
-  serverTest.test('should import setup and initialize', test => {
+  await serverTest.test('should import setup and initialize', test => {
     try {
       let initStub = sandbox.stub()
       Proxyquire('../../src/server', {
@@ -64,5 +64,5 @@ Test('Server', (serverTest) => {
     }
   })
 
-  serverTest.end()
+  await serverTest.end()
 })
