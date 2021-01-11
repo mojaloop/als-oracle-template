@@ -17,70 +17,58 @@
  optionally within square brackets <email>.
  * Gates Foundation
 
- * Crosslake
- - Lewis Daly <lewisd@crosslaketech.com>
+ - Rajiv Mothilal <rajiv.mothilal@modusbox.com>
 
  --------------
  ******/
 'use strict'
 
-jest.mock('@mojaloop/central-services-logger', () => {
-  return {
-    info: jest.fn(), // suppress info output
-    debug: jest.fn()
-  }
-})
+const Package = require('../package')
+const Inert = require('@hapi/inert')
+const Vision = require('@hapi/vision')
+const Blipp = require('blipp')
+const ErrorHandling = require('@mojaloop/central-services-error-handling')
+const EventPlugin = require('@mojaloop/central-services-shared').Util.Hapi.HapiEventPlugin
+const OpenapiBackendValidator = require('@mojaloop/central-services-shared').Util.Hapi.OpenapiBackendValidator
+const registerPlugins = async (server, openAPIBackend) => {
+  await server.register(OpenapiBackendValidator)
 
-jest.mock('@mojaloop/central-services-metrics', () => {
-  return {
-    setup: jest.fn()
-  }
-})
+  await server.register({
+    plugin: require('hapi-swagger'),
+    options: {
+      info: {
+        title: 'Event Sidecar Swagger Documentation',
+        version: Package.version
+      }
+    }
+  })
 
-/* Mock out the Hapi Server */
-const mockStart = jest.fn()
-jest.mock('@hapi/hapi', () => ({
-  Server: jest.fn().mockImplementation(() => ({
-    register: jest.fn(),
-    ext: jest.fn(),
-    route: jest.fn(),
-    start: mockStart,
-    plugins: {
-      openapi: {
-        setHost: jest.fn()
+  await server.register({
+    plugin: require('@hapi/good'),
+    options: {
+      ops: {
+        interval: 10000
+      }
+    }
+  })
+
+  await server.register({
+    plugin: {
+      name: 'openapi',
+      version: '1.0.0',
+      multiple: true,
+      register: function (server, options) {
+        server.expose('openapi', options.openapi)
       }
     },
-    info: {
-      host: 'localhost',
-      port: 3000
+    options: {
+      openapi: openAPIBackend
     }
-  }))
-}))
-
-const { initialize } = require('../../src/server')
-
-describe('server', () => {
-  afterEach(() => {
-    mockStart.mockClear()
   })
 
-  describe('initialize', () => {
-    it('initializes the server', async () => {
-      // Arrange
-      // Act
-      await initialize(3000)
+  await server.register([Inert, Vision, Blipp, ErrorHandling, EventPlugin])
+}
 
-      // Assert
-      expect(mockStart).toHaveBeenCalled()
-    })
-
-    it('initializes the server when no port is set', async () => {
-      // Arrange
-      // Act
-      await initialize()
-
-      // Assert
-      expect(mockStart).toHaveBeenCalled()
-    })
-  })
-})
+module.exports = {
+  registerPlugins
+}

@@ -24,63 +24,32 @@
  ******/
 'use strict'
 
-jest.mock('@mojaloop/central-services-logger', () => {
-  return {
-    info: jest.fn(), // suppress info output
-    debug: jest.fn()
-  }
-})
+const Sinon = require('sinon')
 
-jest.mock('@mojaloop/central-services-metrics', () => {
-  return {
-    setup: jest.fn()
-  }
-})
+const { registerPlugins } = require('../../src/plugins')
 
-/* Mock out the Hapi Server */
-const mockStart = jest.fn()
-jest.mock('@hapi/hapi', () => ({
-  Server: jest.fn().mockImplementation(() => ({
-    register: jest.fn(),
-    ext: jest.fn(),
-    route: jest.fn(),
-    start: mockStart,
-    plugins: {
-      openapi: {
-        setHost: jest.fn()
-      }
-    },
-    info: {
-      host: 'localhost',
-      port: 3000
-    }
-  }))
-}))
-
-const { initialize } = require('../../src/server')
-
-describe('server', () => {
-  afterEach(() => {
-    mockStart.mockClear()
+let sandbox
+describe('plugins', () => {
+  beforeAll(() => {
+    sandbox = Sinon.createSandbox()
   })
 
-  describe('initialize', () => {
-    it('initializes the server', async () => {
+  afterEach(() => {
+    sandbox.restore()
+  })
+
+  describe('registerPlugins', () => {
+    it('registers the plugins', async () => {
       // Arrange
+      const serverStub = {
+        register: sandbox.stub()
+      }
+
       // Act
-      await initialize(3000)
+      await registerPlugins(serverStub)
 
       // Assert
-      expect(mockStart).toHaveBeenCalled()
-    })
-
-    it('initializes the server when no port is set', async () => {
-      // Arrange
-      // Act
-      await initialize()
-
-      // Assert
-      expect(mockStart).toHaveBeenCalled()
+      expect(serverStub.register.callCount).toBe(5)
     })
   })
 })

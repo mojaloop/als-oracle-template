@@ -16,71 +16,40 @@
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
  * Gates Foundation
-
- * Crosslake
- - Lewis Daly <lewisd@crosslaketech.com>
-
+ - Rajiv Mothilal <rajiv.mothilal@modusbox.com>
  --------------
  ******/
+
 'use strict'
 
-jest.mock('@mojaloop/central-services-logger', () => {
-  return {
-    info: jest.fn(), // suppress info output
-    debug: jest.fn()
-  }
-})
+const Server = require('./server')
+const PJson = require('../package.json')
+const { Command } = require('commander')
+const Config = require('./lib/config')
+const argv = require('./lib/argv').getArgs()
 
-jest.mock('@mojaloop/central-services-metrics', () => {
-  return {
-    setup: jest.fn()
-  }
-})
+const Program = new Command()
 
-/* Mock out the Hapi Server */
-const mockStart = jest.fn()
-jest.mock('@hapi/hapi', () => ({
-  Server: jest.fn().mockImplementation(() => ({
-    register: jest.fn(),
-    ext: jest.fn(),
-    route: jest.fn(),
-    start: mockStart,
-    plugins: {
-      openapi: {
-        setHost: jest.fn()
-      }
-    },
-    info: {
-      host: 'localhost',
-      port: 3000
+Program
+  .version(PJson.version)
+  .description('CLI to manage Servers')
+
+Program.command('api')
+  .alias('a')
+  .description('Start the Transaction Requests API. Use options to specify server type of none to run both') // command description
+
+  // function to execute when command is used
+  .action(async () => {
+    const options = {
+      port: Config.PORT
     }
-  }))
-}))
-
-const { initialize } = require('../../src/server')
-
-describe('server', () => {
-  afterEach(() => {
-    mockStart.mockClear()
+    module.exports = Server.initialize(options.port)
   })
 
-  describe('initialize', () => {
-    it('initializes the server', async () => {
-      // Arrange
-      // Act
-      await initialize(3000)
-
-      // Assert
-      expect(mockStart).toHaveBeenCalled()
-    })
-
-    it('initializes the server when no port is set', async () => {
-      // Arrange
-      // Act
-      await initialize()
-
-      // Assert
-      expect(mockStart).toHaveBeenCalled()
-    })
-  })
-})
+if (Array.isArray(argv) && argv.length > 1) {
+  // parse command line vars
+  Program.parse(argv)
+} else {
+  // display default help
+  Program.help()
+}

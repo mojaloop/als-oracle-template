@@ -1,7 +1,6 @@
 'use strict';
 
-const Boom = require('boom');
-const dataAccess = require('../models/participants')
+const Boom = require('@hapi/boom');
 /**
  * Operations on /participants
  */
@@ -14,38 +13,6 @@ module.exports = {
    * responses: 201, 400, 401, 403, 404, 405, 406, 501, 503
    */
   post: async function ParticipantsPost (request, h) {
-    const getData = new Promise((resolve, reject) => {
-      switch (request.server.app.responseCode) {
-        case 201:
-        case 400:
-        case 401:
-        case 404:
-        case 403:
-        case 405:
-        case 406:
-        case 501:
-        case 503:
-          dataAccess.post[`${request.server.app.responseCode}`](request, h, (error, mock) => {
-            if (error) reject(error)
-            else if (!mock.responses) resolve()
-            else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
-            else resolve(mock.responses)
-          })
-          break
-        default:
-          dataAccess.post[`default`](request, h, (error, mock) => {
-            if (error) reject(error)
-            else if (!mock.responses) resolve()
-            else if (mock.responses && mock.responses.code) resolve(Boom.boomify(new Error(mock.responses.message), { statusCode: mock.responses.code }))
-            else resolve(mock.responses)
-          })
-      }
-    })
-    try {
-      const response = await getData
-      return h.response(response).code(request.server.app.responseCode)
-    } catch (e) {
-      console.log(e)
-    }
+    return Boom.notImplemented();
   }
 }

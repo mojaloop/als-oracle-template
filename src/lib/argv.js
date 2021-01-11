@@ -16,71 +16,23 @@
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
  * Gates Foundation
-
+ - Name Surname <name.surname@gatesfoundation.com>
  * Crosslake
- - Lewis Daly <lewisd@crosslaketech.com>
-
+ - Lewis daly <lewisd@crosslaketech.com>
  --------------
  ******/
-'use strict'
 
-jest.mock('@mojaloop/central-services-logger', () => {
-  return {
-    info: jest.fn(), // suppress info output
-    debug: jest.fn()
-  }
-})
+/**
+ * @name getArgs
+ *
+ * @description Provide a mockable way to override the process.argv
+ *
+ * @returns {Array<String>} - A list of the process args
+ */
+const getArgs = () => {
+  return process.argv
+}
 
-jest.mock('@mojaloop/central-services-metrics', () => {
-  return {
-    setup: jest.fn()
-  }
-})
-
-/* Mock out the Hapi Server */
-const mockStart = jest.fn()
-jest.mock('@hapi/hapi', () => ({
-  Server: jest.fn().mockImplementation(() => ({
-    register: jest.fn(),
-    ext: jest.fn(),
-    route: jest.fn(),
-    start: mockStart,
-    plugins: {
-      openapi: {
-        setHost: jest.fn()
-      }
-    },
-    info: {
-      host: 'localhost',
-      port: 3000
-    }
-  }))
-}))
-
-const { initialize } = require('../../src/server')
-
-describe('server', () => {
-  afterEach(() => {
-    mockStart.mockClear()
-  })
-
-  describe('initialize', () => {
-    it('initializes the server', async () => {
-      // Arrange
-      // Act
-      await initialize(3000)
-
-      // Assert
-      expect(mockStart).toHaveBeenCalled()
-    })
-
-    it('initializes the server when no port is set', async () => {
-      // Arrange
-      // Act
-      await initialize()
-
-      // Assert
-      expect(mockStart).toHaveBeenCalled()
-    })
-  })
-})
+module.exports = {
+  getArgs
+}
