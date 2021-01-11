@@ -3,10 +3,8 @@ info:
   version: "1.0"
   title: Interface for interaction between Mojaloop's Account Lookup Service(ALS) and
     an Oracle Registry Service
-  description: Based on Mojaloop [API
-    Definition](https://github.com/mojaloop/mojaloop-specification/blob/master/API%20Definition%20v1.0.pdf)
-    updated on 2018-03-13 Version 1.0. More information can be found are
-    [mojaloop.io](http://mojaloop.io/)
+  description: Based on Mojaloop [API Definition](https://github.com/mojaloop/mojaloop-specification/blob/master/API%20Definition%20v1.0.pdf).
+    More information can be found at [mojaloop.io](http://mojaloop.io/)
   contact: {}
 paths:
   /health:

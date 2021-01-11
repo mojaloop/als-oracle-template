@@ -6,9 +6,9 @@
     "contributors": [],
     "repository": {
         "type": "git",
-        "url": "git://github.com/vgenev/als-oracle-template.git"
+        "url": "git://github.com/mojaloop/als-oracle-template.git"
     },
-    "bugs": "http://github.com/vgenev/als-oracle-template/issues",
+    "bugs": "http://github.com/mojaloop/als-oracle-template/issues",
     "publishConfig": {
         "registry": "https://registry.npmjs.org"
     },
@@ -39,8 +39,5 @@
         "lint": "eslint .",
         "audit:resolve": "SHELL=sh resolve-audit --production",
         "audit:check": "SHELL=sh check-audit --production"
-    },
-    "generator-swaggerize": {
-        "version": "4.1.0"
     }
 }
