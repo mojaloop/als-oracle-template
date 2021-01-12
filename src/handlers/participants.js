@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-const Boom = require('@hapi/boom');
+const Boom = require('@hapi/boom')
 /**
  * Operations on /participants
  */
@@ -13,6 +13,6 @@ module.exports = {
    * responses: 201, 400, 401, 403, 404, 405, 406, 501, 503
    */
   post: async function ParticipantsPost (request, h) {
-    return Boom.notImplemented();
+    return Boom.notImplemented()
   }
 }

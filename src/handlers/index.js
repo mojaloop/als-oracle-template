@@ -14,5 +14,5 @@ module.exports = {
   ParticipantsByTypeAndIDGet: participantsTypeId.get,
   ParticipantsByTypeAndIDPost: participantsTypeId.post,
   ParticipantsByTypeAndIDPut: participantsTypeId.put,
-  ParticipantsByTypeAndIDDelete: participantsTypeId.delete,
+  ParticipantsByTypeAndIDDelete: participantsTypeId.delete
 }

@@ -12,8 +12,8 @@ module.exports = {
    * produces: application/json
    * responses: 200, 400, 401, 403, 404, 405, 406, 501, 503
    */
-  get: function ParticipantsByTypeAndIDGet(request, h) {
-      return Boom.notImplemented();
+  get: function ParticipantsByTypeAndIDGet (request, h) {
+    return Boom.notImplemented()
   },
   /**
    * summary: Return participant information
@@ -22,8 +22,8 @@ module.exports = {
    * produces: application/json
    * responses: 200, 400, 401, 403, 404, 405, 406, 501, 503
    */
-  put: function ParticipantsByTypeAndIDPut(request, h) {
-      return Boom.notImplemented();
+  put: function ParticipantsByTypeAndIDPut (request, h) {
+    return Boom.notImplemented()
   },
   /**
    * summary: Create participant information
@@ -32,8 +32,8 @@ module.exports = {
    * produces: application/json
    * responses: 201, 400, 401, 403, 404, 405, 406, 501, 503
    */
-  post: function ParticipantsByTypeAndIDPost(request, h) {
-      return Boom.notImplemented();
+  post: function ParticipantsByTypeAndIDPost (request, h) {
+    return Boom.notImplemented()
   },
   /**
    * summary: Delete participant information
@@ -42,7 +42,7 @@ module.exports = {
    * produces: application/json
    * responses: 204, 400, 401, 403, 404, 405, 406, 501, 503
    */
-  delete: function ParticipantsByTypeAndIDDelete(request, h) {
-      return Boom.notImplemented();
+  delete: function ParticipantsByTypeAndIDDelete (request, h) {
+    return Boom.notImplemented()
   }
-};
+}

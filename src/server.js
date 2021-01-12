@@ -1,23 +1,15 @@
 'use strict'
 
-
 const { Server } = require('@hapi/hapi')
 const Logger = require('@mojaloop/central-services-logger')
 const HeaderValidation = require('@mojaloop/central-services-shared').Util.Hapi.FSPIOPHeaderValidation
 const OpenapiBackend = require('@mojaloop/central-services-shared').Util.OpenapiBackend
 const ErrorHandler = require('@mojaloop/central-services-error-handling')
 const Path = require('path')
-const Config = require('../config/default.json')
+const Config = require('./lib/config.js')
 
 const Handlers = require('./handlers')
 const Plugins = require('./plugins')
-const defaultConfig = {
-  port: Config.PORT,
-  debug: {
-    request: ['error'],
-    log: ['error']
-  }
-}
 
 const createServer = async function (port) {
   try {
@@ -25,20 +17,19 @@ const createServer = async function (port) {
       port,
       routes: {
         validate: {
-          options: ErrorHandler.validateRoutes(),
+          options: ErrorHandler.validateRoutes()
         }
       }
     })
     const api = await OpenapiBackend.initialise(Path.resolve(__dirname, './interface/openapi.yaml'), Handlers)
     await Plugins.registerPlugins(server, api)
-    // await connectDatabase()
     await server.register([
       {
         plugin: HeaderValidation
       },
       {
         plugin: require('./lib/logger-plugin')
-      },
+      }
     ])
 
     server.ext([
@@ -56,7 +47,7 @@ const createServer = async function (port) {
             server.log('response', request.response)
           } else {
             const error = request.response
-            let errorMessage = {
+            const errorMessage = {
               errorInformation: {
                 errorCode: error.statusCode,
                 errorDescription: error.message
@@ -96,8 +87,8 @@ const createServer = async function (port) {
   }
 }
 
-const initialize = async (config = defaultConfig) => {
-  const server = await createServer(config.port)
+const initialize = async (port = Config.PORT) => {
+  const server = await createServer(port)
   Logger.info(`Server running on ${server.info.host}:${server.info.port}`)
   return server
 }

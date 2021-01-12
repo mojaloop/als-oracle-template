@@ -35,7 +35,7 @@ let Sinon
 let Command
 let sandbox
 
-describe('Base Tests', () => {
+describe('base Tests', () => {
   beforeEach(() => {
     jest.resetModules()
 
