@@ -6,44 +6,44 @@
     "contributors": [],
     "repository": {
         "type": "git",
-        "url": "git://github.com/vgenev/als-oracle-template.git"
+        "url": "git://github.com/mojaloop/als-oracle-template.git"
     },
-    "bugs": "http://github.com/vgenev/als-oracle-template/issues",
+    "bugs": "http://github.com/mojaloop/als-oracle-template/issues",
     "publishConfig": {
         "registry": "https://registry.npmjs.org"
     },
     "dependencies": {
-        "hapi": "^17.0.0",
-        "boom": "^7.1.1",
-        "hapi-openapi": "^1.0.0",
-        "@mojaloop/central-services-shared": "4.1.0-snapshot",
-        "@mojaloop/forensic-logging-client": "0.5.1"
+        "@hapi/boom": "^9.1.1",
+        "@hapi/good": "^9.0.1",
+        "@hapi/hapi": "^20.0.3",
+        "@hapi/inert": "^6.0.3",
+        "@hapi/vision": "^6.0.1",
+        "@mojaloop/central-services-logger": "^10.6.0",
+        "@mojaloop/central-services-shared": "11.5.3",
+        "blipp": "^4.0.2",
+        "hapi-swagger": "^14.1.0"
     },
     "devDependencies": {
-        "eslint": "5.6.1",
-        "faucet": "0.0.1",
-        "istanbul": "1.1.0-alpha.1",
+        "@mojaloop/api-snippets": "^11.4.1",
+        "eslint": "7.17.0",
+        "jest": "^26.6.3",
+        "jest-junit": "^12.0.0",
+        "npm-audit-resolver": "^2.2.1",
         "pre-commit": "1.2.2",
-        "proxyquire": "2.1.0",
-        "rewire": "^4.0.1",
-        "sinon": "6.3.5",
-        "swagmock": "1.0.0",
-        "tap-xunit": "^2.3.0",
-        "tape": "4.6.2",
-        "tapes": "4.1.0"
+        "sinon": "9.2.3",
+        "standard": "^16.0.3",
+        "swagger-cli": "^4.0.4"
     },
     "scripts": {
-        "start": "node ./src/server",
-        "test": "tape 'test/**/*.js'",
-        "test:unit": "tape 'test/unit/**/*.js'",
-        "test:xunit": "tape 'test/unit/**/*.js' | tap-xunit",
-        "cover": "istanbul cover tape -- 'test/unit/**/*.js'",
+        "start": "node src/index.js api",
+        "test": "npm run test:unit",
+        "test:unit": "jest --testMatch '**/test/unit/**/*.test.js'",
+        "test:junit": "jest --reporters=default --reporters=jest-junit --testMatch '**/test/unit/**/*.test.js'",
+        "test:coverage": "jest --coverage --coverageThreshold='{}' --testMatch '**/test/unit/**/*.test.js'",
+        "test:coverage-check": "jest --coverage --testMatch '**/test/unit/**/*.test.js'",
         "lint": "eslint .",
-        "test:coverage-check": "npm run test:coverage && istanbul check-coverage",
-        "test:coverage": "istanbul cover tape -- 'test/unit/**/*.js'",
-        "regenerate": "yo swaggerize:test --framework hapi --apiPath './src/interface/swagger.json'"
-    },
-    "generator-swaggerize": {
-        "version": "4.1.0"
+        "audit:resolve": "SHELL=sh resolve-audit --production",
+        "audit:check": "SHELL=sh check-audit --production",
+        "build:openapi": "swagger-cli bundle -t yaml -o src/interface/openapi.yaml src/interface/openapi_template.yaml && swagger-cli validate src/interface/openapi.yaml"
     }
 }
